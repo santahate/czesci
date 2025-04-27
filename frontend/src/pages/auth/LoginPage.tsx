@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import LoginForm from '../../components/forms/LoginForm';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, error, loading } = useAuth();
+  const { login, error, loading, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (username: string, password: string) => {
     const success = await login(username, password);
