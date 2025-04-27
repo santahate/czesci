@@ -1,6 +1,10 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
+
+interface CsrfResponse {
+  csrf_token: string;
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,13 +18,11 @@ api.interceptors.request.use(async (config) => {
     try {
       // Get CSRF token
       const csrfUrl = `${API_BASE_URL}auth/csrf/`;
-      const response = await axios.get(csrfUrl, {
+      const response = await axios.get<CsrfResponse>(csrfUrl, {
         withCredentials: true
       });
-      const csrfToken = response.data.csrf_token;
-      
       // Add token to headers
-      config.headers['X-CSRFToken'] = csrfToken;
+      config.headers['X-CSRFToken'] = response.data.csrf_token;
     } catch (error) {
       console.error('Failed to fetch CSRF token:', error);
     }

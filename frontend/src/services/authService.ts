@@ -1,38 +1,10 @@
 import apiService from './apiService';
-
-interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-interface LoginResponse {
-  username: string;
-  email?: string;
-  is_staff?: boolean;
-}
-
-interface UserData {
-  username: string;
-  email?: string;
-  is_staff?: boolean;
-}
-
-interface CsrfResponse {
-  csrf_token: string;
-}
+import { LoginRequest, LoginResponse, User } from '../types/auth';
 
 /**
  * Сервис для работы с аутентификацией
  */
 class AuthService {
-  /**
-   * Получение CSRF токена
-   */
-  async getCsrfToken(): Promise<string> {
-    const response = await apiService.get<CsrfResponse>('auth/csrf/');
-    return response.csrf_token;
-  }
-
   /**
    * Вход в систему
    * @param credentials - данные для входа
@@ -51,9 +23,9 @@ class AuthService {
   /**
    * Получение данных текущего пользователя
    */
-  async getCurrentUser(): Promise<UserData | null> {
+  async getCurrentUser(): Promise<User | null> {
     try {
-      return await apiService.get<UserData>('auth/user/');
+      return await apiService.get<User>('auth/user/');
     } catch (error) {
       // Если запрос завершился с ошибкой, пользователь не аутентифицирован
       return null;
