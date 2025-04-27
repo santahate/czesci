@@ -3,3 +3,6 @@
 /backend/.venv/
 /frontend/node_modules/
 /.idea/*
+/frontend/.env.local
+/frontend/.env.production
+/frontend/.env.test

@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
+
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: API_BASE_URL,
   withCredentials: true
 });
 
@@ -11,7 +13,8 @@ api.interceptors.request.use(async (config) => {
   if (config.method !== 'get' && config.method !== 'head' && config.method !== 'options') {
     try {
       // Get CSRF token
-      const response = await axios.get('http://localhost:8000/api/auth/csrf/', {
+      const csrfUrl = `${API_BASE_URL}auth/csrf/`;
+      const response = await axios.get(csrfUrl, {
         withCredentials: true
       });
       const csrfToken = response.data.csrf_token;
