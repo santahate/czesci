@@ -10,7 +10,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await api.get('/api/auth/user/');
+        const response = await api.get('/auth/user/');
         setUsername(response.data.username);
       } catch (err) {
         navigate('/login');
@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await api.post('/api/auth/logout/');
+      await api.post('/auth/logout/');
       navigate('/login');
     } catch (err) {
       console.error('Logout failed:', err);
