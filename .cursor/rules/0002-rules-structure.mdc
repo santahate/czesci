@@ -1,0 +1,39 @@
+---
+description: Rules Structure
+globs:
+alwaysApply: true
+---
+# Project Rules Structure
+
+## General Guidelines
+- All project rules must follow a strict numeric categorization.
+- The rule ID defines its area of application.
+- Core rules must always be loaded into the active context.
+
+## Rule Categories
+
+- **00\*\*** — Core Project Rules
+  Must always be loaded.
+  Define the project structure, workflow standards, and basic operational principles.
+
+- **10\*\*** — Backend Rules
+  Standards for backend development, API design, database usage, queue management, and asynchronous tasks.
+
+- **20\*\*** — Frontend Rules
+  Standards for frontend development, UI behavior, API interactions, styling rules, and usage of libraries or frameworks.
+
+## Naming Conventions
+- Filenames must match the rule ID and title (e.g., `0000-cursor-rules.mdc`).
+- Titles should be short but descriptive.
+- Tags should be consistent, lowercase, and clearly define the rule’s area (e.g., `[backend]`, `[frontend]`, `[core]`).
+
+## Future-Proofing
+*Reserved for future project scaling:*
+
+- **30\*\*** — Infrastructure and DevOps
+- **40\*\*** — Testing and QA
+- **50\*\*** — Documentation and Project Management Standards
+
+These ranges are not yet used but are reserved.
+
+---
