@@ -1,5 +1,5 @@
 ---
-description: 
+description: Service Architecture for Frontend
 globs: *.ts,*.tsx,**/frontend/**
 alwaysApply: false
 ---

@@ -1,0 +1,82 @@
+---
+description: Frontend Linting on Every Change
+globs: *.ts,*.tsx,**/frontend/**
+alwaysApply: false
+---
+# Frontend Linting on Every Change
+
+## Rule
+- Linting must be performed **every time** frontend code is modified.
+- No code should be committed without passing lint checks.
+
+## Requirements
+- Use the project’s configured linter and settings.
+- Fix all linting errors before committing.
+- Warnings must also be addressed if they affect code readability, consistency, or quality.
+
+## How to Run the Linter
+
+### Basic Linting
+
+```bash
+# From the frontend directory
+cd frontend
+npm run lint
+```
+
+### Auto-fix Issues
+
+```bash
+# Automatically fix most problems
+cd frontend
+npm run lint:fix
+```
+
+### Recommended Workflow
+
+1. **During local development:**
+   ```bash
+   # Run formatting after making changes
+   cd frontend
+   npm run format
+
+   # Then run the linter
+   npm run lint
+
+   # If errors are found, try auto-fixing
+   npm run lint:fix
+   ```
+
+2. **Before committing:**
+   ```bash
+   cd frontend
+   npm run format && npm run lint
+   ```
+
+### Editor Integration
+
+It is strongly recommended to configure your editor for automatic linting:
+
+- **VS Code**:
+  - Install the "ESLint" and "Prettier" extensions.
+  - Enable "Format on Save" to auto-format your code.
+
+- **WebStorm/IntelliJ IDEA**:
+  - Enable ESLint under *Settings → Languages & Frameworks → JavaScript → Code Quality Tools → ESLint*.
+  - Set up Prettier under *Settings → Languages & Frameworks → JavaScript → Prettier*.
+
+### Important Note
+
+**Always make sure you are in the `frontend` directory before running npm commands!**
+
+```bash
+# Check the current directory
+pwd
+
+# If needed, navigate to the frontend directory
+cd frontend
+```
+
+The error `Could not read package.json: Error: ENOENT: no such file or directory` usually happens when you run an npm command outside of a directory containing a `package.json`.
+
+---
