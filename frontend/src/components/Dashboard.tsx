@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import authService from '../services/authService';
 
 const Dashboard: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -10,8 +10,12 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await api.get('/auth/user/');
-        setUsername(response.data.username);
+        const userData = await authService.getCurrentUser();
+        if (userData) {
+          setUsername(userData.username);
+        } else {
+          navigate('/login');
+        }
       } catch (err) {
         navigate('/login');
       }
@@ -22,7 +26,7 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout/');
+      await authService.logout();
       navigate('/login');
     } catch (err) {
       console.error('Logout failed:', err);

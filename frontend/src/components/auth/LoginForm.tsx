@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api/axios';
+import authService from '../../services/authService';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -14,13 +14,13 @@ const LoginForm: React.FC = () => {
     setError('');
 
     try {
-      // Attempt login
-      const response = await api.post('/auth/login/', {
+      // Attempt login using authService
+      const userData = await authService.login({
         username,
         password
       });
 
-      if (response.data.username) {
+      if (userData.username) {
         navigate('/dashboard');
       }
     } catch (err) {
