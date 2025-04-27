@@ -17,7 +17,7 @@ const LoginForm: React.FC = () => {
       // Attempt login using authService
       const userData = await authService.login({
         username,
-        password
+        password,
       });
 
       if (userData.username) {
@@ -52,7 +52,7 @@ const LoginForm: React.FC = () => {
             autoComplete="username"
             autoFocus
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -64,19 +64,14 @@ const LoginForm: React.FC = () => {
             id="password"
             autoComplete="current-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
           />
           {error && (
             <Typography color="error" sx={{ mt: 1 }}>
               {error}
             </Typography>
           )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Sign In
           </Button>
         </Box>
@@ -85,4 +80,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm; 
+export default LoginForm;

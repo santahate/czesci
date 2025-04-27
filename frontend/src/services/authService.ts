@@ -34,14 +34,14 @@ class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     // Очищаем кэш при логине
     this.userCache = null;
-    
+
     const userData = await apiService.post<LoginResponse>('auth/login/', credentials);
-    
+
     // Сохраняем данные пользователя
     this.userCache = userData;
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userData));
     localStorage.setItem(AUTH_STATE_KEY, 'authenticated');
-    
+
     return userData;
   }
 
@@ -53,10 +53,10 @@ class AuthService {
     this.userCache = null;
     localStorage.removeItem(AUTH_USER_KEY);
     localStorage.setItem(AUTH_STATE_KEY, 'unauthenticated');
-    
+
     return apiService.post('auth/logout/');
   }
-  
+
   /**
    * Получение данных текущего пользователя
    */
@@ -65,49 +65,52 @@ class AuthService {
     if (localStorage.getItem(AUTH_STATE_KEY) === 'unauthenticated') {
       return null;
     }
-    
+
     // Если запрос к API уже выполняется, возвращаем тот же промис
     if (this.fetchingUser && this.userFetchPromise) {
       return this.userFetchPromise;
     }
-    
+
     // Если данные уже есть в кэше, возвращаем их
     if (this.userCache !== null) {
       return this.userCache;
     }
-    
+
     // Отмечаем, что начали запрос
     this.fetchingUser = true;
-    
+
     // Создаем промис запроса, чтобы повторные вызовы могли его переиспользовать
-    this.userFetchPromise = new Promise<User | null>(async (resolve) => {
-      try {
-        const user = await apiService.get<User>('auth/user/');
-        this.userCache = user;
-        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-        localStorage.setItem(AUTH_STATE_KEY, 'authenticated');
-        resolve(user);
-      } catch (error) {
-        this.userCache = null;
-        localStorage.removeItem(AUTH_USER_KEY);
-        localStorage.setItem(AUTH_STATE_KEY, 'unauthenticated');
-        resolve(null);
-      } finally {
-        this.fetchingUser = false;
-        this.userFetchPromise = null;
-      }
+    this.userFetchPromise = new Promise<User | null>(resolve => {
+      apiService
+        .get<User>('auth/user/')
+        .then(user => {
+          this.userCache = user;
+          localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+          localStorage.setItem(AUTH_STATE_KEY, 'authenticated');
+          resolve(user);
+        })
+        .catch(_error => {
+          this.userCache = null;
+          localStorage.removeItem(AUTH_USER_KEY);
+          localStorage.setItem(AUTH_STATE_KEY, 'unauthenticated');
+          resolve(null);
+        })
+        .finally(() => {
+          this.fetchingUser = false;
+          this.userFetchPromise = null;
+        });
     });
-    
+
     return this.userFetchPromise;
   }
-  
+
   /**
    * Проверка, аутентифицирован ли пользователь
    */
   isAuthenticated(): boolean {
     return this.userCache !== null || localStorage.getItem(AUTH_STATE_KEY) === 'authenticated';
   }
-  
+
   /**
    * Очистка кэша пользователя
    */
@@ -117,4 +120,4 @@ class AuthService {
   }
 }
 
-export default new AuthService(); 
+export default new AuthService();

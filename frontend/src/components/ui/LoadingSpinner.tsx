@@ -6,19 +6,16 @@ interface LoadingSpinnerProps {
   fullScreen?: boolean;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 40, 
-  fullScreen = false 
-}) => {
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 40, fullScreen = false }) => {
   return (
-    <Box 
+    <Box
       sx={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         height: fullScreen ? '100vh' : 'auto',
         width: '100%',
-        padding: 2
+        padding: 2,
       }}
     >
       <CircularProgress size={size} />
@@ -26,4 +23,4 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   );
 };
 
-export default LoadingSpinner; 
+export default LoadingSpinner;

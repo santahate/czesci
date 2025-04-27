@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import LoginForm from '../../components/forms/LoginForm';
 
 const LoginPage: React.FC = () => {
@@ -34,14 +34,10 @@ const LoginPage: React.FC = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <LoginForm 
-          onSubmit={handleSubmit} 
-          error={error} 
-          isLoading={loading}
-        />
+        <LoginForm onSubmit={handleSubmit} error={error} isLoading={loading} />
       </Box>
     </Container>
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

@@ -46,11 +46,7 @@ const Dashboard: React.FC = () => {
         <Typography component="h1" variant="h4" sx={{ mb: 4 }}>
           Hello, {username}!
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleLogout}
-        >
+        <Button variant="contained" color="primary" onClick={handleLogout}>
           Logout
         </Button>
       </Box>
@@ -58,4 +54,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

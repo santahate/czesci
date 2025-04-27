@@ -8,11 +8,7 @@ interface LoginFormProps {
   isLoading?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSubmit, 
-  error = null, 
-  isLoading = false 
-}) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, error = null, isLoading = false }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -33,7 +29,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         autoComplete="username"
         autoFocus
         value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        onChange={e => setUsername(e.target.value)}
       />
       <TextField
         margin="normal"
@@ -45,7 +41,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         id="password"
         autoComplete="current-password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={e => setPassword(e.target.value)}
       />
       {error && (
         <Typography color="error" sx={{ mt: 1 }}>
@@ -65,4 +61,4 @@ const LoginForm: React.FC<LoginFormProps> = ({
   );
 };
 
-export default LoginForm; 
+export default LoginForm;

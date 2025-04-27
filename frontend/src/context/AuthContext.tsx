@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useContext, ReactNode, useRef } from 'react';
+import React, { createContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import authService from '../services/authService';
 import { User } from '../types/auth';
 
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
       return;
     }
-    
+
     try {
       fetchInProgress.current = true;
       setLoading(true);
@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         error,
         login,
         logout,
-        isAuthenticated
+        isAuthenticated,
       }}
     >
       {children}
@@ -99,12 +99,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export default AuthContext; 
+export default AuthContext;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -25,11 +25,7 @@ const DashboardPage: React.FC = () => {
         <Typography component="h1" variant="h4" sx={{ mb: 4 }}>
           Hello, {user?.username}!
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleLogout}
-        >
+        <Button variant="contained" color="primary" onClick={handleLogout}>
           Logout
         </Button>
       </Box>
@@ -37,4 +33,4 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-export default DashboardPage; 
+export default DashboardPage;

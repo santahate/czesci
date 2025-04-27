@@ -21,7 +21,7 @@ class ApiService {
    * @param data - данные для отправки
    * @param config - дополнительные настройки запроса
    */
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await api.post<T>(url, data, config);
     return response.data;
   }
@@ -32,7 +32,7 @@ class ApiService {
    * @param data - данные для отправки
    * @param config - дополнительные настройки запроса
    */
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await api.put<T>(url, data, config);
     return response.data;
   }
@@ -53,11 +53,11 @@ class ApiService {
    * @param data - данные для отправки
    * @param config - дополнительные настройки запроса
    */
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await api.patch<T>(url, data, config);
     return response.data;
   }
 }
 
 // Экспортируем экземпляр сервиса для использования в проекте
-export default new ApiService(); 
+export default new ApiService();

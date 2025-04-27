@@ -12,13 +12,10 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   return (
-    <MuiButton
-      disabled={disabled || isLoading}
-      {...props}
-    >
+    <MuiButton disabled={disabled || isLoading} {...props}>
       {isLoading ? 'Loading...' : children}
     </MuiButton>
   );
 };
 
-export default Button; 
+export default Button;
