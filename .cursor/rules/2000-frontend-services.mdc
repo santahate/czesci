@@ -1,0 +1,79 @@
+---
+description: 
+globs: *.ts,*.tsx,**/frontend/**
+alwaysApply: false
+---
+# Service Architecture for Frontend
+
+## Context
+- When developing the frontend, you must use a service architecture to interact with APIs.
+- All communication with the backend must go through services, not directly from components.
+
+## Requirements
+- Do not use direct `axios` calls inside components.
+- All API requests must be encapsulated within dedicated services.
+- Create services based on domain areas inside the `src/services/` directory.
+- Always type all input parameters and return values of services.
+- Use `apiService` as the base for any new services.
+
+## Examples
+
+<example>
+// Correct: Using a service inside a component
+import authService from '../services/authService';
+
+const handleLogin = async () => {
+  const user = await authService.login({ username, password });
+  if (user) {
+    navigate('/dashboard');
+  }
+};
+</example>
+
+<example type="invalid">
+// Incorrect: Direct API call inside a component
+import api from '../api/axios';
+
+const handleLogin = async () => {
+  const response = await api.post('/auth/login/', { username, password });
+  if (response.data) {
+    navigate('/dashboard');
+  }
+};
+</example>
+
+## Service Structure
+
+```typescript
+// Template for a new service
+import apiService from './apiService';
+
+// Interfaces for input/output data
+interface EntityData {
+  id: number;
+  name: string;
+}
+
+// Service class
+class EntityService {
+  async getAll(): Promise<EntityData[]> {
+    return apiService.get<EntityData[]>('entities/');
+  }
+  
+  async getById(id: number): Promise<EntityData> {
+    return apiService.get<EntityData>(`entities/${id}/`);
+  }
+  
+  async create(data: Omit<EntityData, 'id'>): Promise<EntityData> {
+    return apiService.post<EntityData>('entities/', data);
+  }
+}
+
+export default new EntityService();
+```
+
+## Critical Rules
+- ALWAYS use existing services to interact with APIs.
+- ALWAYS create a new service if no existing one fits your needs.
+- NEVER make direct `axios` or `fetch` calls from components.
+- ALWAYS type both requests and responses using TypeScript interfaces.
