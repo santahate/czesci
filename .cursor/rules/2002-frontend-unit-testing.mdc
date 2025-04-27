@@ -1,0 +1,50 @@
+---
+description: Frontend Unit Testing
+globs: *.ts,*.tsx,**/frontend/**
+alwaysApply: false
+---
+ Frontend Unit Testing
+
+## Rule
+- All frontend components and logic must be covered by unit tests.
+- Tests must be written and updated **with any change** to related code.
+- No changes should be considered complete without corresponding tests.
+
+## How to Run Tests
+
+All commands must be executed from the `frontend` directory.
+
+### Available Commands
+
+- **Run all tests once**:
+  ```bash
+  cd frontend
+  npm run test
+  ```
+
+- **Run tests in watch mode** (tests are rerun automatically when files change):
+  ```bash
+  cd frontend
+  npm run test:watch
+  ```
+
+- **Run tests with code coverage report**:
+  ```bash
+  cd frontend
+  npm run test:coverage
+  ```
+
+## Best Practices
+
+- Create or update tests immediately when modifying components, logic, or features.
+- Keep tests small, focused, and easy to understand.
+- Prefer testing behavior and output over internal implementation details.
+- Regularly check the code coverage report and maintain high coverage for critical parts of the application.
+
+---
+
+# Summary
+
+Unit testing ensures component reliability and protects against regressions. Writing and running tests must become an integral part of the development process.
+
+---
