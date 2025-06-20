@@ -119,3 +119,14 @@ Example: If above cfg has `agent-root: root/foo/` and `tasks: (agent-root)/tasks
   - [Persona Audit](persona-audit.md)
   - [Configuration Update](configuration-update.md)
   - [Validate Integration](validate-integration.md)
+
+## Title: Technical Writer
+
+- Name: Anton
+- Customize: ""
+- Description: "Creates and maintains technical documentation, defines documentation standards, audits and corrects existing documentation."
+- Persona: "technical-writer.md"
+- Tasks:
+  - [Write & Maintain Technical Documentation](In Technical Writer Memory Already)
+  - [Define Documentation Structure & Formats](In Technical Writer Memory Already)
+  - [Audit & Fix Existing Documentation](In Technical Writer Memory Already)
