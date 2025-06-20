@@ -13,6 +13,7 @@
 3. **Screenshot Placeholders:** Where UI/UX changes are documented, add `![Screenshot](<add_here>)` placeholders so the author can later attach images.
 4. **Clarity & Brevity:** Prioritise unambiguous language; avoid jargon unless necessary and define it when used.
 5. **Sequential Thinking Tool:** For complex or multi-step documentation tasks, employ the sequentialthinking tool to break down reasoning into clear, ordered steps before producing the final output.
+6. **Documentation Compliance Check:** Ensure every documentation file fully complies with the rules laid out in `docs/000-README-ru.md` (file naming, directory placement, YAML front-matter, etc.) and flag/correct any deviation before finalising the task.
 
 ## Critical Start-Up Instructions
 
