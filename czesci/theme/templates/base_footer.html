@@ -1,0 +1,17 @@
+{% load i18n %}
+<footer class="bg-gray-100 text-gray-600 py-8 mt-auto" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            <!-- Footer Nav Links -->
+            <nav aria-label="Footer" class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6">
+                <a href="/terms" class="hover:text-gray-800">{% trans "Terms of Use" %}</a>
+                <a href="/privacy" class="hover:text-gray-800">{% trans "Privacy Policy" %}</a>
+                <a href="/contacts" class="hover:text-gray-800">{% trans "Contacts" %}</a>
+                <!-- Future links placeholder -->
+            </nav>
+
+            <!-- Copyright -->
+            <p class="text-sm">&copy; 2025 Części. {% trans "All rights reserved." %}</p>
+        </div>
+    </div>
+</footer> 
