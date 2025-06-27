@@ -36,8 +36,29 @@
 							</div>
 						</div>
 
-						<!-- CTA Button -->
-						<a href="/login" class="md:px-3 lg:px-4 py-2 md:py-1.5 whitespace-nowrap rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Login" %}</a>
+						<!-- Auth Buttons -->
+						{% if request.user.is_authenticated %}
+							<div x-data="{ openUser:false }" class="relative">
+								<button @click="openUser = !openUser" class="inline-flex items-center px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none">
+									{% trans "Hi," %}&nbsp;{{ request.user.first_name|default:request.user.username }}
+									<svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.08 1.04l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+								</button>
+								<!-- Dropdown -->
+								<div x-show="openUser" @click.away="openUser=false" x-transition class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
+									<a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{% trans "Settings" %}</a>
+									{% if request.user.buyer_profile and request.user.seller_profile %}
+										{% if request.session.view_mode == 'buyer' or not request.session.view_mode %}
+											<a href="/switch-to-seller" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{% trans "Switch to Seller Mode" %}</a>
+										{% else %}
+											<a href="/switch-to-buyer" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{% trans "Switch to Buyer Mode" %}</a>
+										{% endif %}
+									{% endif %}
+									<a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{% trans "Logout" %}</a>
+								</div>
+							</div>
+						{% else %}
+							<a href="/login" class="md:px-3 lg:px-4 py-2 md:py-1.5 whitespace-nowrap rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Login" %}</a>
+						{% endif %}
 					</div>
 
 					<!-- Mobile Hamburger -->
@@ -67,9 +88,22 @@
 						<a href="?lang=en" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">EN</a>
 					</div>
 
-					<!-- CTA Button inside Drawer -->
+					<!-- CTA inside Drawer -->
 					<div class="border-t border-gray-200 mt-4 pt-4 flex flex-col space-y-2">
-						<a href="/login" @click="mobileOpen = false" class="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Login" %}</a>
+						{% if request.user.is_authenticated %}
+							<span class="px-4 py-2 text-gray-700">{% trans "Hi," %} {{ request.user.first_name|default:request.user.username }}</span>
+							<a href="/settings" @click="mobileOpen=false" class="w-full px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 text-left">{% trans "Settings" %}</a>
+							{% if request.user.buyer_profile and request.user.seller_profile %}
+								{% if request.session.view_mode == 'buyer' or not request.session.view_mode %}
+									<a href="/switch-to-seller" @click="mobileOpen=false" class="w-full px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 text-left">{% trans "Switch to Seller Mode" %}</a>
+								{% else %}
+									<a href="/switch-to-buyer" @click="mobileOpen=false" class="w-full px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 text-left">{% trans "Switch to Buyer Mode" %}</a>
+								{% endif %}
+							{% endif %}
+							<a href="{% url 'logout' %}" @click="mobileOpen=false" class="w-full px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 text-left">{% trans "Logout" %}</a>
+						{% else %}
+							<a href="/login" @click="mobileOpen=false" class="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Login" %}</a>
+						{% endif %}
 					</div>
 				</div>
 			</div>

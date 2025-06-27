@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, get_user_model, login
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from django.contrib.auth.decorators import login_required
 
 from .forms import LoginForm
 from users.models import PhoneNumber
@@ -58,4 +59,21 @@ def login_view(request):
 
     # If request via HTMX, return partial template only.
     template = "users/login_form_partial.html" if request.headers.get("HX-Request") else "users/login.html"
-    return render(request, template, {"form": form}) 
+    return render(request, template, {"form": form})
+
+
+# ---------------- View Mode Switchers -----------------
+
+
+@login_required
+def switch_to_seller(request):
+    """Set session flag to seller and redirect back."""
+    request.session["view_mode"] = "seller"
+    return redirect(request.META.get("HTTP_REFERER", reverse("home")))
+
+
+@login_required
+def switch_to_buyer(request):
+    """Set session flag to buyer and redirect back."""
+    request.session["view_mode"] = "buyer"
+    return redirect(request.META.get("HTTP_REFERER", reverse("home"))) 
