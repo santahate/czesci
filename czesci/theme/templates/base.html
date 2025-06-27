@@ -36,9 +36,8 @@
 							</div>
 						</div>
 
-						<!-- CTA Buttons -->
-						<button @click.prevent="htmx.ajax('GET', '/buyer/login', {target: '#modal-root'})" class="md:px-3 lg:px-4 py-2 md:py-1.5 whitespace-nowrap rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Buyer Login" %}</button>
-						<button @click.prevent="htmx.ajax('GET', '/seller/login', {target: '#modal-root'})" class="md:px-3 lg:px-4 py-2 md:py-1.5 whitespace-nowrap rounded-md bg-green-600 text-white hover:bg-green-700">{% trans "Seller Login" %}</button>
+						<!-- CTA Button -->
+						<a href="/login" class="md:px-3 lg:px-4 py-2 md:py-1.5 whitespace-nowrap rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Login" %}</a>
 					</div>
 
 					<!-- Mobile Hamburger -->
@@ -68,10 +67,9 @@
 						<a href="?lang=en" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">EN</a>
 					</div>
 
-					<!-- CTA Buttons inside Drawer -->
+					<!-- CTA Button inside Drawer -->
 					<div class="border-t border-gray-200 mt-4 pt-4 flex flex-col space-y-2">
-						<button @click.prevent="htmx.ajax('GET', '/buyer/login', {target: '#modal-root'}); mobileOpen = false" class="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Buyer Login" %}</button>
-						<button @click.prevent="htmx.ajax('GET', '/seller/login', {target: '#modal-root'}); mobileOpen = false" class="w-full px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700">{% trans "Seller Login" %}</button>
+						<a href="/login" @click="mobileOpen = false" class="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">{% trans "Login" %}</a>
 					</div>
 				</div>
 			</div>
