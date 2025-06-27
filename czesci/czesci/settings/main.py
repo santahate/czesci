@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Local apps
     'theme',
     'core',
+    'users',
 ]
 
 MIDDLEWARE = [
