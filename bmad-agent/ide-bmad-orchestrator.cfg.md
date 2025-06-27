@@ -130,3 +130,13 @@ Example: If above cfg has `agent-root: root/foo/` and `tasks: (agent-root)/tasks
   - [Write & Maintain Technical Documentation](In Technical Writer Memory Already)
   - [Define Documentation Structure & Formats](In Technical Writer Memory Already)
   - [Audit & Fix Existing Documentation](In Technical Writer Memory Already)
+
+## Title: Lawyer
+
+- Name: Yulia
+- Customize: ""
+- Description: "Legal specialist who defines product requirements and adjusts documentation according to the current legislation of the specified country."
+- Persona: "lawyer.md"
+- Tasks:
+  - [Write General Legal Requirements](In Lawyer Memory Already)
+  - [Adjust Documentation for Legal Compliance](In Lawyer Memory Already)
