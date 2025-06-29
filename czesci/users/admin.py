@@ -7,13 +7,13 @@ from .models import PhoneNumber
 
 @admin.register(BuyerProfile)
 class BuyerProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "phone", "created_at")
-    search_fields = ("user__username", "phone")
+    list_display = ("user", "created_at")
+    search_fields = ("user__username", )
 
 @admin.register(SellerProfile)
 class SellerProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "company_name", "phone", "created_at")
-    search_fields = ("user__username", "company_name", "phone")
+    list_display = ("user", "company_name", "created_at")
+    search_fields = ("user__username", "company_name", )
 
 @admin.register(PhoneNumber)
 class PhoneNumberAdmin(admin.ModelAdmin):

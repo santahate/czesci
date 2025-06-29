@@ -11,7 +11,6 @@ class BuyerProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="buyer_profile",
     )
-    phone = models.CharField(max_length=20, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -28,7 +27,6 @@ class SellerProfile(models.Model):
         related_name="seller_profile",
     )
     company_name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=20, blank=True)
     website = models.URLField(blank=True)
     address = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
