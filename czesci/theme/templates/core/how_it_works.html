@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "How It Works" %} — {{ settings.settings.MAIN_URL   }}{% endblock title %}
+
+{% block content %}
+<section class="bg-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-8 leading-tight">
+            {% trans "How It Works" %}
+        </h1>
+        <p class="text-lg text-gray-700 mb-12">
+            {% blocktrans with site=settings.settings.MAIN_URL  %}{{ site }} is an online marketplace that connects car-owners with auto-parts sellers. Follow these simple steps to get the best offer in minutes.{% endblocktrans %}
+        </p>
+
+        <!-- Steps -->
+        <ol class="space-y-12">
+            <li class="flex items-start">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold mr-4">1</div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Submit a request" %}</h2>
+                    <p class="text-gray-700">
+                        {% trans "Fill in the online form providing the following information:" %}
+                    </p>
+                    <ul class="list-disc list-inside text-gray-700 mt-2 space-y-1">
+                        <li>{% trans "Vehicle details (make, model, year, engine)" %}</li>
+                        <li>{% blocktrans %}List of required spare parts (up to <strong>5</strong> items per request){% endblocktrans %}</li>
+                        <li>{% trans "Your contact information" %}</li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="flex items-start">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold mr-4">2</div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Instant broadcast" %}</h2>
+                    <p class="text-gray-700">{% blocktrans %}After submission, your request is automatically forwarded to <strong>dozens</strong> of shops and distributors registered in our system.{% endblocktrans %}</p>
+                </div>
+            </li>
+
+            <li class="flex items-start">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold mr-4">3</div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Receive offers" %}</h2>
+                    <p class="text-gray-700">{% trans "Sellers who have the requested parts in stock reply with their price, delivery options and warranty terms." %}</p>
+                </div>
+            </li>
+
+            <li class="flex items-start">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold mr-4">4</div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Choose the best deal" %}</h2>
+                    <p class="text-gray-700">{% blocktrans %}Compare the offers and select the seller that suits you. Sending a request <strong>does not</strong> oblige you to place an order; it merely helps you find the most attractive offer fast.{% endblocktrans %}</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="bg-gray-50 py-16 border-t border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-8">{% trans "Frequently Asked Questions" %}</h2>
+
+        <div class="space-y-6">
+            <!-- FAQ Item 1 -->
+            <details class="bg-white rounded-md shadow-sm p-4">
+                <summary class="font-medium cursor-pointer">{% trans "1. How fast will sellers respond?" %}</summary>
+                <p class="mt-2 text-gray-700">{% blocktrans %}Most replies arrive within <strong>one hour</strong>, but it can take up to <strong>24 hours</strong> depending on the day and time of the request. Requests submitted during weekends may receive some offers immediately and the rest on the next business day.{% endblocktrans %}</p>
+            </details>
+
+            <!-- FAQ Item 2 -->
+            <details class="bg-white rounded-md shadow-sm p-4">
+                <summary class="font-medium cursor-pointer">{% trans "2. Can I request several parts at once?" %}</summary>
+                <p class="mt-2 text-gray-700">{% blocktrans %}Yes. A single request can include up to <strong>five</strong> spare-part names. If you need more, simply create an additional request.{% endblocktrans %}</p>
+            </details>
+
+            <!-- FAQ Item 3 -->
+            <details class="bg-white rounded-md shadow-sm p-4">
+                <summary class="font-medium cursor-pointer">{% blocktrans with site=settings.MAIN_URL  %}3. Can I place an order directly through {{ site }}?{% endblocktrans %}</summary>
+                <p class="mt-2 text-gray-700">{% blocktrans with site=settings.MAIN_URL  %}No. {{ site }} does <strong>not</strong> sell parts. We act solely as an intermediary between buyers and sellers.{% endblocktrans %}</p>
+            </details>
+
+            <!-- FAQ Item 4 -->
+            <details class="bg-white rounded-md shadow-sm p-4">
+                <summary class="font-medium cursor-pointer">{% trans "4. Is it safe to buy via your website?" %}</summary>
+                <p class="mt-2 text-gray-700">{% trans "Every seller undergoes a verification process before activation, and many well-known Ukrainian suppliers operate on our platform. Nevertheless, we cannot oversee every transaction. Please verify the seller's full company name, address, contact details, and delivery/return policies before ordering." %}</p>
+            </details>
+
+            <!-- FAQ Item 5 -->
+            <details class="bg-white rounded-md shadow-sm p-4">
+                <summary class="font-medium cursor-pointer">{% trans "5. I want to dismantle my car and sell it for parts. Can I register as a seller?" %}</summary>
+                <p class="mt-2 text-gray-700">{% trans "No. Only legal entities or sole proprietors engaged in wholesale or retail trade of auto parts can register as sellers." %}</p>
+            </details>
+
+            <!-- FAQ Item 6 -->
+            <details class="bg-white rounded-md shadow-sm p-4">
+                <summary class="font-medium cursor-pointer">{% trans "6. What is a VIN code and where can I find it?" %}</summary>
+                <p class="mt-2 text-gray-700">
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>{% trans "On the front of the dashboard, visible through the windshield." %}</li>
+                        <li>{% trans "On the driver-side door jamb near the lock." %}</li>
+                        <li>{% trans "In the vehicle registration certificate (technical passport)." %}</li>
+                    </ul>
+                </p>
+            </details>
+        </div>
+    </div>
+</section>
+{% endblock content %} 

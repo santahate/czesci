@@ -12,6 +12,7 @@ urlpatterns = [
     path('logout', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('switch-to-seller', user_views.switch_to_seller, name='switch_to_seller'),
     path('switch-to-buyer', user_views.switch_to_buyer, name='switch_to_buyer'),
+    path('how-it-works', core_views.how_it_works, name='how_it_works'),
     path('__reload__/', include('django_browser_reload.urls')),
 ]
 
