@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import RegexValidator
+from django.db.models import Q, CheckConstraint, UniqueConstraint
 
 
 class BuyerProfile(models.Model):
@@ -110,6 +111,7 @@ class PhoneNumber(models.Model):
                 check=(
                     (models.Q(buyer_profile__isnull=False) & models.Q(seller_profile__isnull=True) & models.Q(profile_type='buyer'))
                     | (models.Q(seller_profile__isnull=False) & models.Q(buyer_profile__isnull=True) & models.Q(profile_type='seller'))
+                    | (models.Q(buyer_profile__isnull=True) & models.Q(seller_profile__isnull=True))
                 ),
                 name="phone_profile_type_consistency",
             ),
@@ -184,6 +186,16 @@ class Company(models.Model):
         verbose_name = "company"
         verbose_name_plural = "companies"
 
+        constraints = [
+            # Ensure NIP unique across SellerProfile table
+            UniqueConstraint(fields=["nip"], name="unique_seller_nip"),
+            # If legal_entity then KRS must be non-blank
+            CheckConstraint(
+                check=Q(legal_form="sole_trader") | (Q(legal_form="legal_entity") & ~Q(krs="")),
+                name="krs_required_for_legal_entity",
+            ),
+        ]
+
     def __str__(self) -> str:  # noqa: DunderStr
         return self.short_name or self.legal_name
 
@@ -191,3 +203,24 @@ class Company(models.Model):
     def invoice_nip(self) -> str:
         """Return NIP with optional PL prefix depending on VAT payer status."""
         return f"PL{self.nip}" if self.vat_payer else self.nip 
+
+
+class Consent(models.Model):
+    """Stores explicit user consents (ToS, Privacy, Marketing)."""
+
+    class ConsentType(models.TextChoices):
+        TERMS = "terms", "Terms of Service"
+        PRIVACY = "privacy", "Privacy Policy"
+        MARKETING = "marketing", "Marketing"
+        AGE = "age", "Age Confirmation"
+
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="consents")
+    type = models.CharField(max_length=20, choices=ConsentType.choices)
+    accepted_at = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("user", "type")
+
+    def __str__(self) -> str:  # noqa: DunderStr
+        return f"{self.user} consent {self.type}" 

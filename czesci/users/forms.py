@@ -55,12 +55,17 @@ class BasicRegistrationForm(forms.Form):
             }
         ),
     )
+    from users.models import PHONE_REGEX  # local import to avoid circular
+
     phone = forms.CharField(
-        label=_("Phone (+E.164)"),
+        label=_("Phone (E.164)"),
+        validators=[PHONE_REGEX],
         widget=forms.TextInput(
             attrs={
                 "class": "w-full px-4 py-2 border rounded-md mt-4",
                 "placeholder": _("+48123123123"),
+                "pattern": "\\+?[0-9]{8,15}",
+                "inputmode": "tel",
             }
         ),
     )
@@ -123,6 +128,16 @@ class BasicRegistrationForm(forms.Form):
     consent_privacy = forms.BooleanField(
         label=_("I have read the Privacy Policy"),
         required=True,
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "mr-2",
+            }
+        ),
+    )
+
+    consent_marketing = forms.BooleanField(
+        label=_("I agree to receive marketing communications"),
+        required=False,
         widget=forms.CheckboxInput(
             attrs={
                 "class": "mr-2",

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth import logout  # Added for logout functionality
@@ -14,7 +15,8 @@ from .forms import (
     BuyerRegistrationForm,
     SellerRegistrationForm,
 )
-from users.models import PhoneNumber
+
+from users.services.registration import RegistrationService
 
 
 User = get_user_model()
@@ -120,24 +122,10 @@ def register_view(request):
         if form.is_valid():
             cd = form.cleaned_data
 
-            # Create a unique username (phone preferred, fallback to timestamp)
-            username_base = cd["phone"].lstrip("+") or str(int(timezone.now().timestamp()))
-            username = username_base
-            counter = 1
-            while User.objects.filter(username=username).exists():
-                username = f"{username_base}_{counter}"
-                counter += 1
-
-            user = User.objects.create_user(
-                username=username,
-                first_name=cd["first_name"],
-                last_name=cd["last_name"],
-                email=cd.get("email", ""),
-                password=cd["password1"],
-            )
+            # Delegate to service layer
+            user, otp_code = RegistrationService.register_basic(cd, request.META.get("REMOTE_ADDR"))
 
             # Persist helper fields in session for the next step
-            otp_code = f"{random.randint(100000, 999999)}"
             request.session["pending_user_id"] = user.id
             request.session["pending_phone"] = cd["phone"]
             request.session["pending_role"] = role
@@ -171,6 +159,15 @@ def verify_phone_view(request):
 
     if request.method == "POST":
         otp_entered = request.POST.get("otp", "").strip()
+
+        # Rate-limiting: allow max 5 attempts per session
+        attempt_key = "otp_attempts"
+        attempts = request.session.get(attempt_key, 0) + 1
+        request.session[attempt_key] = attempts
+        if attempts > settings.MAX_SMS_ATTEMPTS:
+            messages.error(request, _("Too many failed attempts. Please restart registration."))
+            return redirect(reverse("register"))
+
         if otp_entered == request.session.get("pending_otp"):
             user_id = request.session.pop("pending_user_id")
             # Clean-up helper session variables
@@ -180,6 +177,9 @@ def verify_phone_view(request):
 
             user = User.objects.get(id=user_id)
             login(request, user)
+
+            # Mark phone verified via service
+            RegistrationService.verify_phone(user, otp_entered, otp_entered)  # expected_otp stored in session demo
 
             # Decide next step based on chosen role
             next_url = reverse("register_buyer") if role == "buyer" else reverse("register_seller")
@@ -191,7 +191,7 @@ def verify_phone_view(request):
 
             return redirect(next_url)
 
-        messages.error(request, _("Invalid OTP. Please try again."))
+        messages.error(request, _(f"Invalid OTP. Attempts left: {5 - attempts}"))
 
     template = "users/verify_phone.html"
     return render(request, template)
@@ -212,12 +212,7 @@ def register_buyer_view(request):
         form = BuyerRegistrationForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            from users.models import BuyerProfile
-
-            buyer_profile, created = BuyerProfile.objects.get_or_create(
-                user=request.user,
-                defaults={"delivery_address": cd["delivery_address"]},
-            )
+            RegistrationService.register_buyer(request.user, cd)
 
             messages.success(request, _("Buyer profile created. Your account is ready!"))
 
@@ -245,24 +240,7 @@ def register_seller_view(request):
         form = SellerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
-            from users.models import SellerProfile
-
-            seller_profile, created = SellerProfile.objects.get_or_create(
-                user=request.user,
-                defaults={
-                    "legal_form": cd["legal_form"],
-                    "business_name": cd["business_name"],
-                    "business_address": cd["business_address"],
-                    "nip": cd["nip"],
-                    "regon": cd.get("regon", ""),
-                    "krs": cd.get("krs", ""),
-                    "iban": cd["iban"],
-                    "representative_name": cd.get("representative_name", ""),
-                    "representative_position": cd.get("representative_position", ""),
-                    "id_document": cd.get("id_document"),
-                    "representative_authorisation_doc": cd.get("representative_authorisation_doc"),
-                },
-            )
+            RegistrationService.register_seller(request.user, cd)
 
             messages.success(request, _("Seller profile created. Your account is ready!"))
 

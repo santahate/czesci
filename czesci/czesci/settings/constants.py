@@ -1,0 +1,1 @@
+MAX_SMS_ATTEMPTS = 5
