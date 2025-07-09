@@ -9,8 +9,8 @@
 			<div class="hidden md:flex md:items-center md:space-x-4 lg:space-x-8 md:ml-4 lg:ml-8">
 				<a href="#find-parts" class="text-gray-700 hover:text-gray-900">{% trans "Find Parts" %}</a>
 				<a href="{% url 'how_it_works' %}" class="text-gray-700 hover:text-gray-900">{% trans "How it Works?" %}</a>
-				<a href="#seller-registration" class="text-gray-700 hover:text-gray-900">{% trans "Seller Registration" %}</a>
-				<a href="#buyer-registration" class="text-gray-700 hover:text-gray-900">{% trans "Buyer Registration" %}</a>
+				<a href="{% url 'register' %}?type=seller" class="text-gray-700 hover:text-gray-900">{% trans "Seller Registration" %}</a>
+				<a href="{% url 'register' %}?type=buyer" class="text-gray-700 hover:text-gray-900">{% trans "Buyer Registration" %}</a>
 				<a href="#verify-seller" class="text-gray-700 hover:text-gray-900">{% trans "Verify Seller" %}</a>
 
 				<!-- Language Switcher -->
@@ -67,8 +67,8 @@
 		<div class="px-2 pt-2 pb-3 space-y-1">
 			<a href="#find-parts" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "Find Parts" %}</a>
 			<a href="{% url 'how_it_works' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "How it Works?" %}</a>
-			<a href="#seller-registration" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "Seller Registration" %}</a>
-			<a href="#buyer-registration" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "Buyer Registration" %}</a>
+			<a href="{% url 'register' %}?type=seller" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "Seller Registration" %}</a>
+			<a href="{% url 'register' %}?type=buyer" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "Buyer Registration" %}</a>
 			<a href="#verify-seller" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">{% trans "Verify Seller" %}</a>
 
 			<!-- Language Switcher inside Drawer -->
