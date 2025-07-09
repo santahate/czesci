@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Register' %}{% endblock title %}
+
+{% block content %}
+<div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{% trans 'Create your account' %}</h2>
+    <form method="post" class="mt-8 space-y-6" hx-post="/register?type={{ role }}" hx-target="#register-form-container" hx-swap="outerHTML">
+      {% csrf_token %}
+      <div id="register-form-container">
+        {% include 'users/register_form_partial.html' %}
+      </div>
+    </form>
+    <p class="text-center text-sm text-gray-600">
+      {% trans 'Already have an account?' %}
+      <a href="{% url 'login' %}" class="text-blue-600 hover:underline">{% trans 'Sign in' %}</a>
+    </p>
+  </div>
+</div>
+{% endblock content %} 

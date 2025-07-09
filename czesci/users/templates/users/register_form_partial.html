@@ -1,0 +1,43 @@
+{% load i18n %}
+{% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <p class="text-red-600 text-sm">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+<div class="rounded-md shadow-sm -space-y-px">
+  <div>
+    {{ form.first_name }}
+  </div>
+  <div>
+    {{ form.last_name }}
+  </div>
+  <div>
+    {{ form.phone }}
+  </div>
+  <div>
+    {{ form.email }}
+  </div>
+  <div>
+    {{ form.password1 }}
+  </div>
+  <div>
+    {{ form.password2 }}
+  </div>
+  <div>
+    {{ form.role }}
+  </div>
+  <div class="flex items-center mt-4">
+    {{ form.age_confirm }} <label for="id_age_confirm" class="ml-2 text-sm">{{ form.age_confirm.label }}</label>
+  </div>
+  <div class="flex items-center mt-2">
+    {{ form.consent_terms }} <label for="id_consent_terms" class="ml-2 text-sm">{{ form.consent_terms.label }}</label>
+  </div>
+  <div class="flex items-center mt-2">
+    {{ form.consent_privacy }} <label for="id_consent_privacy" class="ml-2 text-sm">{{ form.consent_privacy.label }}</label>
+  </div>
+</div>
+<button type="submit" class="mt-6 group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none">
+  {% trans 'Register' %}
+</button> 

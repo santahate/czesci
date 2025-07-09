@@ -14,6 +14,8 @@ class BuyerProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    delivery_address = models.TextField(blank=False)
+
     def __str__(self) -> str:  # noqa: DunderStr
         return f"BuyerProfile for {self.user.username}"
 
@@ -26,14 +28,39 @@ class SellerProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="seller_profile",
     )
-    company = models.ForeignKey('Company', on_delete=models.CASCADE)
-    website = models.URLField(blank=True)
-    address = models.TextField(blank=True)
+    # 004.5 onboarding spec fields
+    class LegalForm(models.TextChoices):
+        SOLE_TRADER = "sole_trader", "Sole Trader"
+        LEGAL_ENTITY = "legal_entity", "Legal Entity"
+
+    legal_form = models.CharField(max_length=20, choices=LegalForm.choices, default=LegalForm.SOLE_TRADER)
+    business_name = models.CharField(max_length=255)
+    business_address = models.TextField()
+    nip = models.CharField(
+        max_length=10,
+        validators=[RegexValidator(r"^\d{10}$", "Enter 10–digit NIP without prefix.")],
+    )
+    regon = models.CharField(
+        max_length=9,
+        blank=True,
+        validators=[RegexValidator(r"^\d{9}$", "Enter 9–digit REGON.")],
+    )
+    krs = models.CharField(
+        max_length=10,
+        blank=True,
+        validators=[RegexValidator(r"^\d{10}$", "Enter 10–digit KRS.")],
+    )
+    iban = models.CharField(max_length=34)
+    representative_name = models.CharField(max_length=255, blank=True)
+    representative_position = models.CharField(max_length=120, blank=True)
+    representative_authorisation_doc = models.FileField(upload_to="docs/representatives/", blank=True)
+    id_document = models.FileField(upload_to="docs/ids/", blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:  # noqa: DunderStr
-        return f"SellerProfile for {self.user.username} ({self.company_name})"
+        return f"SellerProfile for {self.user.username} ({self.business_name})"
 
 
 PHONE_REGEX = RegexValidator(
