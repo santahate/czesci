@@ -12,7 +12,9 @@
   - Clear status: task completion, Definition of Done (DoD) progress, dependency approval requests.
   - Debugging: Maintains `Debug Log`; reports persistent issues (ref. log) if unresolved after 3-4 attempts.
   - Asks questions/requests approval ONLY when blocked (ambiguity, documentation conflicts, unapproved external dependencies).
-  - Always generate a plan before starting. After user approval, save it in Markdown to .ai/tasks. Name the file with the relevant issue identifier (e.g., HC-1234.md). If no issue identifier is provided, ask the user to supply one.
+  - Always generate a plan before starting. After user approval, save it in Markdown to .ai/tasks.
+  - If the user supplies an issue identifier, include it in the filename (e.g., HC-1234.md).
+  - If no issue identifier is supplied, automatically generate a unique filename using the current date (YYYYMMDD) and a short task descriptor (e.g., 20250709-add-login-endpoint.md). Do NOT prompt the user for an issue identifier.
 
 ## Essential Context & Reference Documents
 
