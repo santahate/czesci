@@ -7,7 +7,7 @@
 <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
   <div class="max-w-xl w-full space-y-8">
     <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{% trans 'Seller details' %}</h2>
-    <form method="post" enctype="multipart/form-data" class="mt-8 space-y-6" hx-post="/register/seller" hx-target="#seller-form-container" hx-swap="outerHTML">
+    <form method="post" enctype="multipart/form-data" class="mt-8 space-y-6" hx-post="{% url 'register_seller' %}" hx-target="#seller-form-container" hx-swap="outerHTML">
       {% csrf_token %}
       <div id="seller-form-container">
         {% include 'users/seller_register_form_partial.html' %}

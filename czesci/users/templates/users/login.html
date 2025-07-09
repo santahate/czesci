@@ -6,7 +6,7 @@
 <div class="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
   <div class="max-w-md w-full space-y-8">
     <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{% trans 'Sign in to your account' %}</h2>
-    <form method="post" class="mt-8 space-y-6" hx-post="/login" hx-target="#login-form-container" hx-swap="outerHTML">
+    <form method="post" class="mt-8 space-y-6" hx-post="{% url 'login' %}" hx-target="#login-form-container" hx-swap="outerHTML">
       {% csrf_token %}
       <div id="login-form-container">
         {% include 'users/login_form_partial.html' %}
