@@ -247,14 +247,14 @@ class SellerRegistrationForm(forms.Form):
         label=_("ID document (PDF/JPEG)"),
         required=False,
         widget=forms.ClearableFileInput(
-            attrs={"class": "w-full px-4 py-2 mt-4"},
+            attrs={"class": "w-full px-4 py-2 mt-4 file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"},
         ),
     )
     representative_authorisation_doc = forms.FileField(
         label=_("Authorisation document (optional)"),
         required=False,
         widget=forms.ClearableFileInput(
-            attrs={"class": "w-full px-4 py-2 mt-4"},
+            attrs={"class": "w-full px-4 py-2 mt-4 file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"},
         ),
     )
 
