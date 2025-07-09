@@ -6,9 +6,9 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
+from django.urls import reverse_lazy
+
 from django.http import HttpResponse
-import random
 from .forms import (
     LoginForm,
     BasicRegistrationForm,
@@ -200,10 +200,11 @@ def verify_phone_view(request):
 # ---------------- Step 2 Views -----------------
 
 
-@login_required
 def register_buyer_view(request):
     """Step 2: Collect buyer profile information."""
 
+    if not request.user.is_authenticated:
+        return redirect(reverse_lazy("register") + "?type=buyer")
     # If profile already exists, redirect home
     if getattr(request.user, "buyer_profile", None):
         return redirect(reverse("home"))
@@ -229,9 +230,11 @@ def register_buyer_view(request):
     return render(request, template, {"form": form})
 
 
-@login_required
 def register_seller_view(request):
     """Step 2: Collect seller profile information."""
+
+    if not request.user.is_authenticated:
+        return redirect(reverse_lazy("register") + "?type=seller")
 
     if getattr(request.user, "seller_profile", None):
         return redirect(reverse("home"))
