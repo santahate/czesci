@@ -38,13 +38,22 @@
     {{ form.role }}
   </div>
   <div class="flex items-center mt-4">
-    {{ form.age_confirm }} <label for="id_age_confirm" class="ml-2 text-sm">{{ form.age_confirm.label }}</label>
+    {{ form.age_confirm }}
+    <label for="id_age_confirm" class="ml-2 text-sm">
+      {{ form.age_confirm.label }} <span class="text-red-600">*</span>
+    </label>
   </div>
   <div class="flex items-center mt-2">
-    {{ form.consent_terms }} <label for="id_consent_terms" class="ml-2 text-sm">{{ form.consent_terms.label }}</label>
+    {{ form.consent_terms }}
+    <label for="id_consent_terms" class="ml-2 text-sm">
+      {{ form.consent_terms.label }} <span class="text-red-600">*</span>
+    </label>
   </div>
   <div class="flex items-center mt-2">
-    {{ form.consent_privacy }} <label for="id_consent_privacy" class="ml-2 text-sm">{{ form.consent_privacy.label }}</label>
+    {{ form.consent_privacy }}
+    <label for="id_consent_privacy" class="ml-2 text-sm">
+      {{ form.consent_privacy.label }} <span class="text-red-600">*</span>
+    </label>
   </div>
   <div class="flex items-center mt-2">
     {{ form.consent_marketing }} <label for="id_consent_marketing" class="ml-2 text-sm">{{ form.consent_marketing.label }}</label>
