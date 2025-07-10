@@ -112,10 +112,10 @@ def register_view(request):
     The user is then redirected to the phone-verification screen.
     """
 
-    # Determine desired role from query-param; default to buyer
-    role = request.GET.get("type", "buyer")
-    if role not in {"buyer", "seller"}:
-        role = "buyer"
+    # Determine initial dropdown selection from query-param (GET only)
+    initial_role = request.GET.get("type", "buyer")
+    if initial_role not in {"buyer", "seller"}:
+        initial_role = "buyer"
 
     if request.method == "POST":
         form = BasicRegistrationForm(request.POST)
@@ -128,7 +128,7 @@ def register_view(request):
             # Persist helper fields in session for the next step
             request.session["pending_user_id"] = user.id
             request.session["pending_phone"] = cd["phone"]
-            request.session["pending_role"] = role
+            request.session["pending_role"] = cd["role"]
             request.session["pending_otp"] = otp_code
 
             messages.info(
@@ -144,10 +144,10 @@ def register_view(request):
 
             return redirect(reverse("verify_phone"))
     else:
-        form = BasicRegistrationForm(initial={"role": role})
+        form = BasicRegistrationForm(initial={"role": initial_role})
 
     template = "users/register_form_partial.html" if request.headers.get("HX-Request") else "users/register.html"
-    return render(request, template, {"form": form, "role": role})
+    return render(request, template, {"form": form, "role": initial_role})
 
 
 def verify_phone_view(request):

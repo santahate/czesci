@@ -125,17 +125,11 @@ class RegistrationService:  # pylint: disable=too-few-public-methods
             return user.seller_profile
         return SellerProfile.objects.create(
             user=user,
-            legal_form=data["legal_form"],
             business_name=data["business_name"],
             business_address=data["business_address"],
             nip=data["nip"],
             regon=data.get("regon", ""),
             krs=data.get("krs", ""),
-            iban=data["iban"],
-            representative_name=data.get("representative_name", ""),
-            representative_position=data.get("representative_position", ""),
-            id_document=data.get("id_document"),
-            representative_authorisation_doc=data.get("representative_authorisation_doc"),
         ) 
 
     # ----------------- Internal helpers -----------------

@@ -169,21 +169,12 @@ class BuyerRegistrationForm(forms.Form):
     )
 
 
+# ---------------- Seller Step 2 Form -----------------
+
+
 class SellerRegistrationForm(forms.Form):
-    """Step 2 form for seller-specific data with legal entity support."""
+    """Step 2 form for seller-specific data (simplified)."""
 
-    LEGAL_CHOICES = [
-        ("sole_trader", "Sole Trader"),
-        ("legal_entity", "Legal Entity"),
-    ]
-
-    legal_form = forms.ChoiceField(
-        label=_("Legal form"),
-        choices=LEGAL_CHOICES,
-        widget=forms.Select(
-            attrs={"class": "w-full px-4 py-2 border rounded-md"},
-        ),
-    )
     business_name = forms.CharField(
         label=_("Business name"),
         max_length=255,
@@ -205,7 +196,7 @@ class SellerRegistrationForm(forms.Form):
         ),
     )
     regon = forms.CharField(
-        label="REGON (optional)",
+        label="REGON",
         max_length=9,
         required=False,
         widget=forms.TextInput(
@@ -213,55 +204,10 @@ class SellerRegistrationForm(forms.Form):
         ),
     )
     krs = forms.CharField(
-        label="KRS (optional)",
+        label="KRS",
         max_length=10,
         required=False,
         widget=forms.TextInput(
             attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"},
         ),
     )
-    iban = forms.CharField(
-        label="IBAN",
-        max_length=34,
-        widget=forms.TextInput(
-            attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"},
-        ),
-    )
-
-    representative_name = forms.CharField(
-        label=_("Representative name"),
-        required=False,
-        widget=forms.TextInput(
-            attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"},
-        ),
-    )
-    representative_position = forms.CharField(
-        label=_("Representative position"),
-        required=False,
-        widget=forms.TextInput(
-            attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"},
-        ),
-    )
-
-    id_document = forms.FileField(
-        label=_("ID document (PDF/JPEG)"),
-        required=False,
-        widget=forms.ClearableFileInput(
-            attrs={"class": "w-full px-4 py-2 mt-4 file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"},
-        ),
-    )
-    representative_authorisation_doc = forms.FileField(
-        label=_("Authorisation document (optional)"),
-        required=False,
-        widget=forms.ClearableFileInput(
-            attrs={"class": "w-full px-4 py-2 mt-4 file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"},
-        ),
-    )
-
-    def clean(self):
-        cleaned_data = super().clean()
-        legal_form = cleaned_data.get("legal_form")
-        krs = cleaned_data.get("krs")
-        if legal_form == "legal_entity" and not krs:
-            self.add_error("krs", _("KRS is required for legal entities."))
-        return cleaned_data 

@@ -29,12 +29,6 @@ class SellerProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="seller_profile",
     )
-    # 004.5 onboarding spec fields
-    class LegalForm(models.TextChoices):
-        SOLE_TRADER = "sole_trader", "Sole Trader"
-        LEGAL_ENTITY = "legal_entity", "Legal Entity"
-
-    legal_form = models.CharField(max_length=20, choices=LegalForm.choices, default=LegalForm.SOLE_TRADER)
     business_name = models.CharField(max_length=255)
     business_address = models.TextField()
     nip = models.CharField(
@@ -51,11 +45,6 @@ class SellerProfile(models.Model):
         blank=True,
         validators=[RegexValidator(r"^\d{10}$", "Enter 10–digit KRS.")],
     )
-    iban = models.CharField(max_length=34)
-    representative_name = models.CharField(max_length=255, blank=True)
-    representative_position = models.CharField(max_length=120, blank=True)
-    representative_authorisation_doc = models.FileField(upload_to="docs/representatives/", blank=True)
-    id_document = models.FileField(upload_to="docs/ids/", blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
