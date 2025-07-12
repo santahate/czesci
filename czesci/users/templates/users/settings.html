@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Settings' %}{% endblock title %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Tab bar -->
+  <div class="border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <button
+        hx-get="{% url 'settings_buyer' %}"
+        hx-target="#settings-container"
+        hx-swap="innerHTML"
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
+        hx-trigger="load, click">{% trans 'Buyer' %}</button>
+      <button
+        hx-get="{% url 'settings_seller' %}"
+        hx-target="#settings-container"
+        hx-swap="innerHTML"
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+        {% trans 'Seller' %}
+      </button>
+    </nav>
+  </div>
+
+  <!-- Content injected here -->
+  <div id="settings-container" class="mt-6">
+    <!-- HTMX will load partials here -->
+  </div>
+
+  <!-- HTMX Loading Indicator -->
+  <div id="hx-spinner" class="htmx-indicator flex justify-center mt-4" x-data="{show:false}" x-show="show" x-transition>
+    <svg class="animate-spin h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+  document.body.addEventListener('htmx:configRequest', (e) => {
+    document.querySelector('#hx-spinner').__x.$data.show = true;
+  });
+  document.body.addEventListener('htmx:afterOnLoad', (e) => {
+    document.querySelector('#hx-spinner').__x.$data.show = false;
+  });
+</script>
+{% endblock scripts %} 

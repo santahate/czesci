@@ -18,6 +18,14 @@ urlpatterns = [
     path('switch-to-buyer/', user_views.switch_to_buyer, name='switch_to_buyer'),
     path('how-it-works/', core_views.how_it_works, name='how_it_works'),
 
+    # Settings page
+    path('settings/', user_views.settings_view, name='settings'),
+    path('settings/buyer/', user_views.buyer_settings_partial, name='settings_buyer'),
+    path('settings/seller/', user_views.seller_settings_partial, name='settings_seller'),
+    path('settings/phone/add/', user_views.add_phone_view, name='phone_add'),
+    path('settings/phone/verify/<int:pk>/', user_views.verify_phone_settings_view, name='phone_verify'),
+    path('settings/phone/deactivate/<int:pk>/', user_views.deactivate_phone_view, name='phone_deactivate'),
+
 ]
 
 if settings.DEBUG:

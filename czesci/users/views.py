@@ -1,21 +1,23 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
-from django.contrib.auth import logout  # Added for logout functionality
+from django.contrib.auth import logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
-
 from django.http import HttpResponse
 from .forms import (
     LoginForm,
     BasicRegistrationForm,
     BuyerRegistrationForm,
     SellerRegistrationForm,
+    BuyerProfileForm,
+    SellerProfileForm,
 )
 
+from .models import PhoneNumber
 from users.services.registration import RegistrationService
 
 
@@ -159,6 +161,7 @@ def verify_phone_view(request):
 
     if request.method == "POST":
         otp_entered = request.POST.get("otp", "").strip()
+        expected_otp = request.session.get("pending_otp")
 
         # Rate-limiting: allow max 5 attempts per session
         attempt_key = "otp_attempts"
@@ -168,18 +171,19 @@ def verify_phone_view(request):
             messages.error(request, _("Too many failed attempts. Please restart registration."))
             return redirect(reverse("register"))
 
-        if otp_entered == request.session.get("pending_otp"):
-            user_id = request.session.pop("pending_user_id")
-            # Clean-up helper session variables
-            request.session.pop("pending_phone", None)
-            role = request.session.pop("pending_role", "buyer")
-            request.session.pop("pending_otp", None)
-
-            user = User.objects.get(id=user_id)
-            login(request, user)
+        if otp_entered == expected_otp:
+            user_id = request.session["pending_user_id"]
+            phone_number = request.session["pending_phone"]
+            role = request.session["pending_role"]
 
             # Mark phone verified via service
-            RegistrationService.verify_phone(user, otp_entered, otp_entered)  # expected_otp stored in session demo
+            RegistrationService.verify_phone(phone_number, otp_entered, expected_otp)
+
+            # Log the user in and clean up session
+            user = User.objects.get(id=user_id)
+            login(request, user)
+            for key in ["pending_user_id", "pending_phone", "pending_role", "pending_otp", "otp_attempts"]:
+                request.session.pop(key, None)
 
             # Decide next step based on chosen role
             next_url = reverse("register_buyer") if role == "buyer" else reverse("register_seller")
@@ -191,7 +195,7 @@ def verify_phone_view(request):
 
             return redirect(next_url)
 
-        messages.error(request, _(f"Invalid OTP. Attempts left: {5 - attempts}"))
+        messages.error(request, _(f"Invalid OTP. Attempts left: {settings.MAX_SMS_ATTEMPTS - attempts}"))
 
     template = "users/verify_phone.html"
     return render(request, template)
@@ -258,3 +262,213 @@ def register_seller_view(request):
 
     template = "users/seller_register_form_partial.html" if request.headers.get("HX-Request") else "users/seller_register.html"
     return render(request, template, {"form": form})
+
+
+# ---------------- Settings Page Views -----------------
+
+@login_required
+def settings_view(request):
+    """Wrapper page that loads the settings template with empty container.
+    HTMX will fetch the buyer/seller partials.
+    """
+    return render(request, "users/settings.html")
+
+
+@login_required
+def buyer_settings_partial(request):
+    """HTMX fragment for Buyer settings.
+
+    Renders editable form if profile exists, else CTA button.
+    Supports POST updates with HX-Refresh.
+    """
+
+    profile = getattr(request.user, "buyer_profile", None)
+
+    if not profile:
+        # No profile yet – show CTA
+        return render(request, "users/buyer_settings_partial.html", {"profile_exists": False})
+
+    if request.method == "POST":
+        form = BuyerProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            if request.headers.get("HX-Request"):
+                resp = HttpResponse(status=204)
+                resp["HX-Refresh"] = "true"
+                return resp
+    else:
+        form = BuyerProfileForm(instance=profile)
+
+    numbers = profile.phone_numbers.filter(is_active=True)
+    return render(
+        request,
+        "users/buyer_settings_partial.html",
+        {
+            "profile_exists": True,
+            "form": form,
+            "phone_numbers": numbers,
+        },
+    )
+
+
+@login_required
+def seller_settings_partial(request):
+    """HTMX fragment for Seller settings.
+
+    Similar logic to buyer.
+    """
+
+    profile = getattr(request.user, "seller_profile", None)
+
+    if not profile:
+        return render(request, "users/seller_settings_partial.html", {"profile_exists": False})
+
+    if request.method == "POST":
+        form = SellerProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            if request.headers.get("HX-Request"):
+                resp = HttpResponse(status=204)
+                resp["HX-Refresh"] = "true"
+                return resp
+    else:
+        form = SellerProfileForm(instance=profile)
+
+    numbers = profile.phone_numbers.filter(is_active=True)
+    return render(
+        request,
+        "users/seller_settings_partial.html",
+        {
+            "profile_exists": True,
+            "form": form,
+            "phone_numbers": numbers,
+        },
+    )
+
+
+@login_required
+def add_phone_view(request):
+    """Handle phone addition form (POST) – create PhoneNumber and send OTP.
+
+    Expects POST body with field ``number`` (E.164). After creating the number sends OTP
+    via ``PhoneService`` and redirects user to verification view.
+    """
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
+    number_raw = request.POST.get("number", "").strip()
+    if not number_raw:
+        return HttpResponse("Missing phone number", status=400)
+
+    # Determine active profile context – use buyer if tab loaded from buyer settings
+    if hasattr(request.user, "buyer_profile") and request.user.buyer_profile:
+        profile = request.user.buyer_profile
+    elif hasattr(request.user, "seller_profile") and request.user.seller_profile:
+        profile = request.user.seller_profile
+    else:
+        return HttpResponse("Profile not found", status=400)
+
+    try:
+        from users.services.phone import PhoneService  # local import to avoid cycles
+
+        phone_obj, otp_code = PhoneService.add_number_and_send_otp(profile, number_raw)
+
+    except Exception as exc:  # pylint: disable=broad-except
+        return HttpResponse(f"Error: {exc}", status=400)
+
+    # Store expected OTP in session keyed by phone id (demo only)
+    otp_session_key = f"settings_phone_otp_{phone_obj.id}"
+    request.session[otp_session_key] = otp_code
+
+    verify_url = reverse("phone_verify", args=[phone_obj.id])
+
+    if request.headers.get("HX-Request"):
+        resp = HttpResponse(status=204)
+        resp["HX-Redirect"] = verify_url
+        return resp
+
+    return redirect(verify_url)
+
+
+@login_required
+def verify_phone_settings_view(request, pk):
+    """Verify phone number (Settings flow). Displays same template & handles OTP POST.
+
+    OTP code is stored in the session under key ``settings_phone_otp_<pk>`` during addition.
+    After successful verification marks the number as verified and redirects back to settings.
+    """
+
+    from users.models import PhoneNumber  # local import avoid top circular
+    try:
+        phone_obj = PhoneNumber.objects.get(id=pk, is_active=True)
+    except PhoneNumber.DoesNotExist:
+        return HttpResponse("Phone not found", status=404)
+
+    session_key = f"settings_phone_otp_{pk}"
+    expected_otp = request.session.get(session_key)
+
+    if request.method == "POST":
+        otp_entered = request.POST.get("otp", "").strip()
+
+        if not expected_otp:
+            messages.error(request, _("OTP expired. Please resend or add number again."))
+        elif otp_entered == expected_otp:
+            from users.services.phone import PhoneService  # avoid cycles
+
+            PhoneService.mark_verified(phone_obj)
+            # Clean session key
+            request.session.pop(session_key, None)
+
+            messages.success(request, _("Phone number verified."))
+
+            # For HTMX flow we can trigger refresh of partial
+            if request.headers.get("HX-Request"):
+                resp = HttpResponse(status=204)
+                resp["HX-Refresh"] = "true"
+                return resp
+
+            return redirect(reverse("settings"))
+        else:
+            messages.error(request, _("Invalid OTP. Please try again."))
+
+    # GET or failed POST renders template
+    return render(request, "users/verify_phone.html")
+
+
+@login_required
+def deactivate_phone_view(request, pk):
+    """Soft-deactivate (is_active=False) selected phone number.
+
+    Only the owner of the related profile may deactivate. Supports HTMX.
+    """
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
+    from users.models import PhoneNumber
+
+    try:
+        phone_obj = PhoneNumber.objects.get(id=pk, is_active=True)
+    except PhoneNumber.DoesNotExist:
+        return HttpResponse("Phone not found", status=404)
+
+    # Ownership check
+    owner_ok = False
+    if phone_obj.buyer_profile and getattr(request.user, "buyer_profile", None) == phone_obj.buyer_profile:
+        owner_ok = True
+    if phone_obj.seller_profile and getattr(request.user, "seller_profile", None) == phone_obj.seller_profile:
+        owner_ok = True
+
+    if not owner_ok:
+        return HttpResponse("Forbidden", status=403)
+
+    phone_obj.is_active = False
+    phone_obj.save(update_fields=["is_active"])
+
+    if request.headers.get("HX-Request"):
+        resp = HttpResponse(status=204)
+        resp["HX-Refresh"] = "true"
+        return resp
+
+    return redirect(reverse("settings"))

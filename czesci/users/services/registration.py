@@ -6,7 +6,6 @@ The service isolates model manipulation from Django views / API views.
 
 from __future__ import annotations
 
-import random
 from typing import Tuple
 
 from django.contrib.auth import get_user_model
@@ -17,6 +16,7 @@ from django.core.exceptions import ValidationError
 
 from users.models import BuyerProfile, SellerProfile, PhoneNumber
 from users.services.sms import SmsGateway
+from users.services.phone import PhoneService
 
 User = get_user_model()
 
@@ -69,7 +69,7 @@ class RegistrationService:  # pylint: disable=too-few-public-methods
         )
 
         # Generate OTP (6-digits)
-        otp_code = RegistrationService._generate_otp()
+        otp_code = PhoneService.generate_otp()
 
         # Send via SMS gateway (stub)
         SmsGateway.send_otp(phone, otp_code)
@@ -92,18 +92,16 @@ class RegistrationService:  # pylint: disable=too-few-public-methods
 
     @staticmethod
     @transaction.atomic
-    def verify_phone(user: User, otp_entered: str, expected_otp: str) -> bool:  # noqa: D401
-        """Validate OTP (demo version).
-        Marks user phone as verified.
-        """
+    def verify_phone(phone_number: str, otp_entered: str, expected_otp: str) -> bool:  # noqa: D401
+        """Validate OTP and mark phone as verified by delegating to PhoneService."""
         if otp_entered != expected_otp:
             return False
 
-        # For demo we assume the user has only one temp phone before verification
-        phone_entry = PhoneNumber.objects.filter(number=user.username.lstrip("+"), is_verified=False).first()
+        phone_entry = PhoneNumber.objects.filter(number=phone_number, is_verified=False).first()
         if phone_entry:
-            phone_entry.is_verified = True
-            phone_entry.save(update_fields=["is_verified"])
+            PhoneService.mark_verified(phone_entry)
+
+        # Return True if OTP matches, consistent with original behaviour
         return True
 
     @staticmethod
@@ -130,11 +128,4 @@ class RegistrationService:  # pylint: disable=too-few-public-methods
             nip=data["nip"],
             regon=data.get("regon", ""),
             krs=data.get("krs", ""),
-        ) 
-
-    # ----------------- Internal helpers -----------------
-
-    @staticmethod
-    def _generate_otp() -> str:
-        """Return 6-digit zero-padded OTP string."""
-        return f"{random.randint(0, 999999):06d}" 
+        )

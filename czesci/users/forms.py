@@ -1,6 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from users.models import BuyerProfile, SellerProfile
+
 
 class LoginForm(forms.Form):
     identifier = forms.CharField(
@@ -211,3 +213,55 @@ class SellerRegistrationForm(forms.Form):
             attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"},
         ),
     )
+
+# ---------------- Settings Page Editable Forms -----------------
+
+
+class BuyerProfileForm(forms.ModelForm):
+    """Editable form for existing BuyerProfile (Settings page)."""
+
+    class Meta:
+        model = BuyerProfile
+        fields = [
+            "delivery_address",
+        ]
+        widgets = {
+            "delivery_address": forms.Textarea(
+                attrs={
+                    "class": "w-full px-4 py-2 border rounded-md",
+                    "rows": 3,
+                    "placeholder": _("Street, number, city…"),
+                }
+            )
+        }
+
+
+class SellerProfileForm(forms.ModelForm):
+    """Editable form for existing SellerProfile (Settings page)."""
+
+    class Meta:
+        model = SellerProfile
+        fields = [
+            "business_name",
+            "business_address",
+            "nip",
+            "regon",
+            "krs",
+        ]
+        widgets = {
+            "business_name": forms.TextInput(
+                attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"}
+            ),
+            "business_address": forms.Textarea(
+                attrs={"class": "w-full px-4 py-2 border rounded-md mt-4", "rows": 3}
+            ),
+            "nip": forms.TextInput(
+                attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"}
+            ),
+            "regon": forms.TextInput(
+                attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"}
+            ),
+            "krs": forms.TextInput(
+                attrs={"class": "w-full px-4 py-2 border rounded-md mt-4"}
+            ),
+        }
