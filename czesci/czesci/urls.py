@@ -23,7 +23,7 @@ urlpatterns = [
     path('settings/buyer/', user_views.buyer_settings_partial, name='settings_buyer'),
     path('settings/seller/', user_views.seller_settings_partial, name='settings_seller'),
     path('settings/phone/add/', user_views.add_phone_view, name='phone_add'),
-    path('settings/phone/verify/<int:pk>/', user_views.verify_phone_settings_view, name='phone_verify'),
+    path('settings/phone/verify/<int:pk>/<str:profile_type>/', user_views.verify_phone_settings_view, name='phone_verify'),
     path('settings/phone/deactivate/<int:pk>/', user_views.deactivate_phone_view, name='phone_deactivate'),
 
 ]

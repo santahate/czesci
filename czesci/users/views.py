@@ -368,15 +368,19 @@ def add_phone_view(request):
         return HttpResponse(status=405)
 
     number_raw = request.POST.get("number", "").strip()
+    profile_type = request.POST.get("profile_type")
+
     if not number_raw:
         return HttpResponse("Missing phone number", status=400)
 
-    # Determine active profile context – use buyer if tab loaded from buyer settings
-    if hasattr(request.user, "buyer_profile") and request.user.buyer_profile:
-        profile = request.user.buyer_profile
-    elif hasattr(request.user, "seller_profile") and request.user.seller_profile:
-        profile = request.user.seller_profile
+    if profile_type == "buyer":
+        profile = getattr(request.user, "buyer_profile", None)
+    elif profile_type == "seller":
+        profile = getattr(request.user, "seller_profile", None)
     else:
+        return HttpResponse("Invalid profile type", status=400)
+
+    if not profile:
         return HttpResponse("Profile not found", status=400)
 
     try:
@@ -391,7 +395,7 @@ def add_phone_view(request):
     otp_session_key = f"settings_phone_otp_{phone_obj.id}"
     request.session[otp_session_key] = otp_code
 
-    verify_url = reverse("phone_verify", args=[phone_obj.id])
+    verify_url = reverse("phone_verify", args=[phone_obj.id, profile_type])
 
     if request.headers.get("HX-Request"):
         resp = HttpResponse(status=204)
@@ -402,7 +406,7 @@ def add_phone_view(request):
 
 
 @login_required
-def verify_phone_settings_view(request, pk):
+def verify_phone_settings_view(request, pk, profile_type):
     """Verify phone number (Settings flow). Displays same template & handles OTP POST.
 
     OTP code is stored in the session under key ``settings_phone_otp_<pk>`` during addition.
@@ -444,7 +448,11 @@ def verify_phone_settings_view(request, pk):
                 resp["HX-Refresh"] = "true"
                 return resp
 
-            return redirect(reverse("settings"))
+            redirect_url = reverse("settings")
+            if profile_type == "seller":
+                redirect_url += "#seller"
+
+            return redirect(redirect_url)
         else:
             messages.error(request, _("Invalid OTP. Please try again."))
 
