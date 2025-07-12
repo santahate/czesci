@@ -9,12 +9,13 @@
   <div class="border-b border-gray-200">
     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
       <button
+        id="buyer-tab-button"
         hx-get="{% url 'settings_buyer' %}"
         hx-target="#settings-container"
         hx-swap="innerHTML"
-        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
-        hx-trigger="load, click">{% trans 'Buyer' %}</button>
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">{% trans 'Buyer' %}</button>
       <button
+        id="seller-tab-button"
         hx-get="{% url 'settings_seller' %}"
         hx-target="#settings-container"
         hx-swap="innerHTML"
@@ -43,6 +44,15 @@
 {% block scripts %}
 {{ block.super }}
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash;
+    if (hash === '#seller') {
+      document.getElementById('seller-tab-button').click();
+    } else {
+      document.getElementById('buyer-tab-button').click();
+    }
+  });
+
   document.body.addEventListener('htmx:configRequest', (e) => {
     document.querySelector('#hx-spinner').__x.$data.show = true;
   });

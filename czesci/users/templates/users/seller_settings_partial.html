@@ -1,5 +1,12 @@
 {% load i18n %}
 <div class="bg-white shadow rounded p-6" id="seller-settings-root">
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <p class="text-red-600 text-sm">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
   {% if not profile_exists %}
     <h3 class="text-lg font-semibold mb-4">{% trans 'Seller profile not created' %}</h3>
     <a href="{% url 'register_seller' %}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded">
@@ -36,10 +43,12 @@
             {% endif %}
           </td>
           <td class="py-2 text-right">
+            {% if phone_numbers_count > 1 %}
             <form method="post" hx-post="{% url 'phone_deactivate' num.id %}" hx-target="#seller-settings-root" hx-swap="outerHTML">
               {% csrf_token %}
               <button class="text-red-600" title="{% trans 'Remove' %}">✕</button>
             </form>
+            {% endif %}
           </td>
         </tr>
         {% empty %}

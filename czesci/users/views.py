@@ -17,7 +17,7 @@ from .forms import (
     SellerProfileForm,
 )
 
-from .models import PhoneNumber
+from .models import PhoneNumber, BuyerProfile, SellerProfile
 from users.services.registration import RegistrationService
 
 
@@ -317,6 +317,7 @@ def buyer_settings_partial(request):
             "profile_exists": True,
             "form": form,
             "phone_numbers": numbers,
+            "phone_numbers_count": numbers.count(),
         },
     )
 
@@ -352,6 +353,7 @@ def seller_settings_partial(request):
             "profile_exists": True,
             "form": form,
             "phone_numbers": numbers,
+            "phone_numbers_count": numbers.count(),
         },
     )
 
@@ -445,7 +447,10 @@ def verify_phone_settings_view(request, pk, profile_type):
             # For HTMX flow we can trigger refresh of partial
             if request.headers.get("HX-Request"):
                 resp = HttpResponse(status=204)
-                resp["HX-Refresh"] = "true"
+                if profile_type == "buyer":
+                    resp["HX-Redirect"] = reverse("settings") + "#buyer"
+                else:
+                    resp["HX-Redirect"] = reverse("settings") + "#seller"
                 return resp
 
             redirect_url = reverse("settings")
@@ -473,26 +478,57 @@ def deactivate_phone_view(request, pk):
     from users.models import PhoneNumber
 
     try:
-        phone_obj = PhoneNumber.objects.get(id=pk, is_active=True)
+        phone_obj = PhoneNumber.objects.select_related("buyer_profile", "seller_profile").get(
+            id=pk, is_active=True
+        )
     except PhoneNumber.DoesNotExist:
         return HttpResponse("Phone not found", status=404)
 
-    # Ownership check
-    owner_ok = False
+    # Ownership check and determine profile type
+    profile = None
     if phone_obj.buyer_profile and getattr(request.user, "buyer_profile", None) == phone_obj.buyer_profile:
-        owner_ok = True
-    if phone_obj.seller_profile and getattr(request.user, "seller_profile", None) == phone_obj.seller_profile:
-        owner_ok = True
+        profile = phone_obj.buyer_profile
+    elif phone_obj.seller_profile and getattr(request.user, "seller_profile", None) == phone_obj.seller_profile:
+        profile = phone_obj.seller_profile
 
-    if not owner_ok:
+    if not profile:
         return HttpResponse("Forbidden", status=403)
 
-    phone_obj.is_active = False
-    phone_obj.save(update_fields=["is_active"])
+    # Check if this is the last active number for the profile
+    if profile.phone_numbers.filter(is_active=True).count() <= 1:
+        messages.error(request, _("You cannot remove the last phone number."))
+    else:
+        phone_obj.is_active = False
+        phone_obj.save(update_fields=["is_active"])
+        messages.success(request, _("Phone number deactivated."))
 
+    # return the updated partial template
     if request.headers.get("HX-Request"):
-        resp = HttpResponse(status=204)
-        resp["HX-Refresh"] = "true"
-        return resp
+        if isinstance(profile, BuyerProfile):
+            form = BuyerProfileForm(instance=profile)
+            numbers = profile.phone_numbers.filter(is_active=True)
+            return render(
+                request,
+                "users/buyer_settings_partial.html",
+                {
+                    "profile_exists": True,
+                    "form": form,
+                    "phone_numbers": numbers,
+                    "phone_numbers_count": numbers.count(),
+                },
+            )
+        elif isinstance(profile, SellerProfile):
+            form = SellerProfileForm(instance=profile)
+            numbers = profile.phone_numbers.filter(is_active=True)
+            return render(
+                request,
+                "users/seller_settings_partial.html",
+                {
+                    "profile_exists": True,
+                    "form": form,
+                    "phone_numbers": numbers,
+                    "phone_numbers_count": numbers.count(),
+                },
+            )
 
     return redirect(reverse("settings"))
