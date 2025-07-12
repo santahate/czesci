@@ -53,3 +53,6 @@
 
 ### 📚 Documentation
 - [x] Создан `docs/005-Backend/005.3-settings-endpoints-en.md` c новым перечнем маршрутов 
+
+### 🐞 Bug Fixes
+- [x] Tab highlight colour changed to blue (border-blue-600) to match buttons 

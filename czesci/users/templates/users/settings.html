@@ -13,13 +13,13 @@
         hx-get="{% url 'settings_buyer' %}"
         hx-target="#settings-container"
         hx-swap="innerHTML"
-        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">{% trans 'Buyer' %}</button>
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700">{% trans 'Buyer' %}</button>
       <button
         id="seller-tab-button"
         hx-get="{% url 'settings_seller' %}"
         hx-target="#settings-container"
         hx-swap="innerHTML"
-        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700">
         {% trans 'Seller' %}
       </button>
     </nav>
@@ -45,11 +45,24 @@
 {{ block.super }}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const hash = window.location.hash;
-    if (hash === '#seller') {
-      document.getElementById('seller-tab-button').click();
+    const buyerBtn = document.getElementById('buyer-tab-button');
+    const sellerBtn = document.getElementById('seller-tab-button');
+
+    function setActive(btn) {
+      [buyerBtn, sellerBtn].forEach(b => b.classList.remove('border-blue-600', 'text-blue-600'));
+      btn.classList.add('border-blue-600', 'text-blue-600');
+    }
+
+    buyerBtn.addEventListener('click', () => { window.location.hash = '#buyer'; setActive(buyerBtn); });
+    sellerBtn.addEventListener('click', () => { window.location.hash = '#seller'; setActive(sellerBtn); });
+
+    // Initial state based on hash
+    if (window.location.hash === '#seller') {
+      sellerBtn.click();
+      setActive(sellerBtn);
     } else {
-      document.getElementById('buyer-tab-button').click();
+      buyerBtn.click();
+      setActive(buyerBtn);
     }
   });
 
