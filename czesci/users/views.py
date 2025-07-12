@@ -182,7 +182,7 @@ def verify_phone_view(request):
             # Log the user in and clean up session
             user = User.objects.get(id=user_id)
             login(request, user)
-            for key in ["pending_user_id", "pending_phone", "pending_role", "pending_otp", "otp_attempts"]:
+            for key in ["pending_user_id", "pending_otp", "otp_attempts"]:
                 request.session.pop(key, None)
 
             # Decide next step based on chosen role
@@ -217,7 +217,12 @@ def register_buyer_view(request):
         form = BuyerRegistrationForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            RegistrationService.register_buyer(request.user, cd)
+            phone_number = request.session.get("pending_phone")
+            RegistrationService.register_buyer(request.user, cd, phone_number)
+
+            # Clean up session
+            for key in ["pending_phone", "pending_role"]:
+                request.session.pop(key, None)
 
             messages.success(request, _("Buyer profile created. Your account is ready!"))
 
@@ -247,7 +252,12 @@ def register_seller_view(request):
         form = SellerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             cd = form.cleaned_data
-            RegistrationService.register_seller(request.user, cd)
+            phone_number = request.session.get("pending_phone")
+            RegistrationService.register_seller(request.user, cd, phone_number)
+
+            # Clean up session
+            for key in ["pending_phone", "pending_role"]:
+                request.session.pop(key, None)
 
             messages.success(request, _("Seller profile created. Your account is ready!"))
 

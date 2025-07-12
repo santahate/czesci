@@ -106,22 +106,34 @@ class RegistrationService:  # pylint: disable=too-few-public-methods
 
     @staticmethod
     @transaction.atomic
-    def register_buyer(user: User, data: dict) -> BuyerProfile:
-        """Persist BuyerProfile."""
+    def register_buyer(user: User, data: dict, phone_number: str) -> BuyerProfile:
+        """Persist BuyerProfile and associate the verified phone number."""
         if BuyerProfile.objects.filter(user=user).exists():
             return user.buyer_profile
-        return BuyerProfile.objects.create(
+
+        profile = BuyerProfile.objects.create(
             user=user,
             delivery_address=data["delivery_address"],
         )
 
+        # Associate phone number
+        phone_entry = PhoneNumber.objects.filter(
+            number=phone_number, profile_type=PhoneNumber.ProfileType.BUYER, buyer_profile__isnull=True
+        ).first()
+        if phone_entry:
+            phone_entry.buyer_profile = profile
+            phone_entry.save()
+
+        return profile
+
     @staticmethod
     @transaction.atomic
-    def register_seller(user: User, data: dict) -> SellerProfile:
-        """Persist SellerProfile."""
+    def register_seller(user: User, data: dict, phone_number: str) -> SellerProfile:
+        """Persist SellerProfile and associate the verified phone number."""
         if SellerProfile.objects.filter(user=user).exists():
             return user.seller_profile
-        return SellerProfile.objects.create(
+
+        profile = SellerProfile.objects.create(
             user=user,
             business_name=data["business_name"],
             business_address=data["business_address"],
@@ -129,3 +141,13 @@ class RegistrationService:  # pylint: disable=too-few-public-methods
             regon=data.get("regon", ""),
             krs=data.get("krs", ""),
         )
+
+        # Associate phone number
+        phone_entry = PhoneNumber.objects.filter(
+            number=phone_number, profile_type=PhoneNumber.ProfileType.SELLER, seller_profile__isnull=True
+        ).first()
+        if phone_entry:
+            phone_entry.seller_profile = profile
+            phone_entry.save()
+
+        return profile
