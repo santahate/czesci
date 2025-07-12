@@ -418,6 +418,12 @@ def verify_phone_settings_view(request, pk):
     session_key = f"settings_phone_otp_{pk}"
     expected_otp = request.session.get(session_key)
 
+    if settings.DEBUG and expected_otp:
+        messages.info(
+            request,
+            _(f"For demo purposes, your OTP is {expected_otp}. It would normally be sent via SMS."),
+        )
+
     if request.method == "POST":
         otp_entered = request.POST.get("otp", "").strip()
 
