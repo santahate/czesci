@@ -91,6 +91,9 @@ class PhoneNumber(models.Model):
     number = models.CharField(max_length=32, validators=[PHONE_REGEX])
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
+    # Indicates if this phone number should be exposed to sellers. Applicable **only** for
+    # buyer_profile–owned numbers; has no effect for seller-owned numbers.
+    show_to_sellers = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

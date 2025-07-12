@@ -532,3 +532,62 @@ def deactivate_phone_view(request, pk):
             )
 
     return redirect(reverse("settings"))
+
+
+# ---------------------------------------------------
+# Phone visibility toggle (buyer profile only)
+# ---------------------------------------------------
+
+
+@login_required
+def toggle_phone_visibility_view(request, pk):
+    """Toggle the ``show_to_sellers`` flag for a buyer-owned phone number.
+
+    Only the owner of the related *BuyerProfile* may toggle visibility. Supports HTMX, returns
+    the refreshed buyer settings partial.
+    """
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
+    from users.models import PhoneNumber  # local import
+
+    try:
+        phone_obj = PhoneNumber.objects.select_related("buyer_profile").get(id=pk, is_active=True)
+    except PhoneNumber.DoesNotExist:
+        return HttpResponse("Phone not found", status=404)
+
+    # Ensure phone belongs to buyer profile of this user
+    buyer_profile = getattr(request.user, "buyer_profile", None)
+    if phone_obj.buyer_profile is None or phone_obj.buyer_profile != buyer_profile:
+        return HttpResponse("Forbidden", status=403)
+
+    # Toggle flag
+    phone_obj.show_to_sellers = not phone_obj.show_to_sellers
+    phone_obj.save(update_fields=["show_to_sellers"])
+
+    messages.success(
+        request,
+        _("Phone number visibility updated: now %(state)s sellers." )
+        % {"state": _("visible to") if phone_obj.show_to_sellers else _("hidden from")},
+    )
+
+    # Return updated fragment for HTMX
+    if request.headers.get("HX-Request"):
+        from users.forms import BuyerProfileForm  # local import
+
+        form = BuyerProfileForm(instance=buyer_profile)
+        numbers = buyer_profile.phone_numbers.filter(is_active=True)
+        return render(
+            request,
+            "users/buyer_settings_partial.html",
+            {
+                "profile_exists": True,
+                "form": form,
+                "phone_numbers": numbers,
+                "phone_numbers_count": numbers.count(),
+            },
+        )
+
+    # Fallback redirect
+    return redirect(reverse("settings"))

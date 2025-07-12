@@ -18,8 +18,8 @@ class SellerProfileAdmin(admin.ModelAdmin):
 
 @admin.register(PhoneNumber)
 class PhoneNumberAdmin(admin.ModelAdmin):
-    list_display = ("number", "profile_type", "is_active", "is_verified", "created_at")
-    list_filter = ("profile_type", "is_active", "is_verified")
+    list_display = ("number", "profile_type", "is_active", "is_verified", "show_to_sellers", "created_at")
+    list_filter = ("profile_type", "is_active", "is_verified", "show_to_sellers")
     search_fields = ("number",)
     raw_id_fields = ("buyer_profile", "seller_profile")
 

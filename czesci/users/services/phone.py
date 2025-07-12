@@ -38,6 +38,7 @@ class PhoneService:  # pylint: disable=too-few-public-methods
                 number=number,
                 is_active=True,
                 is_verified=False,
+                show_to_sellers=False,
             )
         elif isinstance(profile, SellerProfile):
             phone_obj = PhoneNumber.objects.create(
@@ -47,6 +48,7 @@ class PhoneService:  # pylint: disable=too-few-public-methods
                 number=number,
                 is_active=True,
                 is_verified=False,
+                show_to_sellers=False,
             )
         else:
             raise ValueError("Profile must be BuyerProfile or SellerProfile")
