@@ -34,3 +34,13 @@
     @apply rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-600 focus:ring-indigo-600;
   }
 }
+
+.htmx-indicator{
+  display:none;
+}
+.htmx-request .htmx-indicator{
+  display:flex;
+}
+.htmx-request.htmx-indicator{
+  display:flex;
+}
