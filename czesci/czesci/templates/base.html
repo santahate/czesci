@@ -12,7 +12,7 @@
 	<body class="bg-gray-50 font-serif leading-normal tracking-normal min-h-screen flex flex-col">
 		<!-- Primary Navigation Bar -->
 		<nav x-data="{ mobileOpen: false, langOpen: false }" class="bg-white shadow-md fixed top-0 inset-x-0 z-50">
-			{% include 'fragments/header.html' %}
+			{% include 'inc/base_header.html' %}
 		</nav>
 
 		<!-- Spacer to push content below fixed navbar -->
@@ -22,7 +22,7 @@
 		{% block content %}{% endblock content %}
 
 		<!-- Secondary Navigation Footer -->
-		{% include 'base_footer.html' %}
+		{% include 'inc/base_footer.html' %}
 
 		<!-- Modal Root -->
 		<div id="modal-root"></div>
