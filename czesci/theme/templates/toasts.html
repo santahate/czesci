@@ -1,0 +1,5 @@
+<script>
+    {% for message in messages %}
+        HTMXToaster.addToast('{{ message|escapejs }}', '{{ message.tags }}');
+    {% endfor %}
+</script>
