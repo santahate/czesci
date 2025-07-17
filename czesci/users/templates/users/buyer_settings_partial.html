@@ -44,16 +44,16 @@
                         {% endif %}
                     </td>
                     <td class="py-2">
-                        <form method="post" hx-post="{% url 'phone_toggle_visibility' num.id %}"
-                              hx-target="#buyer-settings-root" hx-swap="outerHTML" class="inline">
+                        <form class="inline">
                             {% csrf_token %}
-                            {% if num.show_to_sellers %}
-                                <button class="text-green-600 underline"
-                                        title="{% trans 'Hide from sellers' %}">{% trans 'Hide' %}</button>
-                            {% else %}
-                                <button class="text-blue-600 underline"
-                                        title="{% trans 'Show to sellers' %}">{% trans 'Show' %}</button>
-                            {% endif %}
+                            <input type="checkbox"
+                                   class="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+                                   hx-post="{% url 'phone_toggle_visibility' num.id %}"
+                                   hx-target="#buyer-settings-root"
+                                   hx-swap="outerHTML"
+                                   hx-include="[name='csrfmiddlewaretoken']"
+                                   title="{% trans 'Toggle visibility to sellers' %}"
+                                   {% if num.show_to_sellers %}checked{% endif %}>
                         </form>
                     </td>
                     <td class="py-2 text-right">
